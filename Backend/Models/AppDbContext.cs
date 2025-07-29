@@ -1,16 +1,15 @@
 ﻿using Backend.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 
-
 namespace Backend.Models
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<ApplicationUser>
     {
-
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<ApplicationUser> Users { get; set; }
@@ -19,6 +18,9 @@ namespace Backend.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // IMPORTANT: Call base method first to configure Identity entities
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<ApplicationUser>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -26,24 +28,6 @@ namespace Backend.Models
                 entity.Property(e => e.Email).IsRequired();
                 entity.Property(e => e.Name).IsRequired();
             });
-
-            modelBuilder.Entity<Alert>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.HasOne(e => e.User)
-                      .WithMany()
-                      .HasForeignKey(e => e.UserId);
-            });
-
-            modelBuilder.Entity<DiagnosticTest>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.HasOne(e => e.User)
-                      .WithMany()
-                      .HasForeignKey(e => e.UserId);
-            });
-
-          
         }
     }
 }
