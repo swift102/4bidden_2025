@@ -1,1 +1,266 @@
-<p>profile works!</p>
+<div class="profile-container">
+  <div class="profile-header">
+    <h1>User Profile & Preferences</h1>
+    <p *ngIf="userProfile" class="user-info">
+      Welcome, {{ userProfile.Name }} | Member since {{ userProfile.createdAt | date:'mediumDate' }}
+    </p>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="alert alert-error">
+    <i class="icon-error"></i>
+    {{ errorMessage }}
+  </div>
+
+  <!-- Success Messages -->
+  <div *ngIf="profileUpdateSuccess" class="alert alert-success">
+    <i class="icon-success"></i>
+    Profile updated successfully!
+  </div>
+
+  <div *ngIf="passwordChangeSuccess" class="alert alert-success">
+    <i class="icon-success"></i>
+    Password changed successfully!
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tab-navigation">
+    <button 
+      [class.active]="activeTab === 'profile'"
+      (click)="switchTab('profile')"
+      class="tab-button">
+      <i class="icon-user"></i>
+      Profile Settings
+    </button>
+    <button 
+      [class.active]="activeTab === 'password'"
+      (click)="switchTab('password')"
+      class="tab-button">
+      <i class="icon-lock"></i>
+      Change Password
+    </button>
+  </div>
+
+  <!-- Profile Settings Tab -->
+  <div *ngIf="activeTab === 'profile'" class="tab-content">
+    <form [formGroup]="profileForm" (ngSubmit)="onProfileSubmit()" class="profile-form">
+      <!-- Basic Information -->
+      <div class="form-section">
+        <h3>Basic Information</h3>
+        
+        <div class="form-group">
+          <label for="name">Full Name *</label>
+          <input 
+            type="text" 
+            id="name"
+            formControlName="name"
+            class="form-control"
+            [class.error]="getFieldError(profileForm, 'name')"
+            placeholder="Enter your full name">
+          <div *ngIf="getFieldError(profileForm, 'name')" class="error-message">
+            {{ getFieldError(profileForm, 'name') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address *</label>
+          <input 
+            type="email" 
+            id="email"
+            formControlName="email"
+            class="form-control"
+            [class.error]="getFieldError(profileForm, 'email')"
+            placeholder="Enter your email address">
+          <div *ngIf="getFieldError(profileForm, 'email')" class="error-message">
+            {{ getFieldError(profileForm, 'email') }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Preferences -->
+      <div class="form-section">
+        <h3>Preferences</h3>
+        
+        <div class="form-group">
+          <label for="theme">Theme *</label>
+          <select 
+            id="theme"
+            formControlName="theme"
+            class="form-control">
+            <option *ngFor="let theme of themes" [value]="theme.value">
+              {{ theme.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="timeZone">Time Zone</label>
+          <select 
+            id="timeZone"
+            formControlName="timeZone"
+            class="form-control">
+            <option *ngFor="let tz of timeZones" [value]="tz.value">
+              {{ tz.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="notificationThreshold">Notification Threshold (1-100) *</label>
+          <input 
+            type="number" 
+            id="notificationThreshold"
+            formControlName="notificationThreshold"
+            class="form-control"
+            [class.error]="getFieldError(profileForm, 'notificationThreshold')"
+            min="1" 
+            max="100"
+            placeholder="5">
+          <div *ngIf="getFieldError(profileForm, 'notificationThreshold')" class="error-message">
+            {{ getFieldError(profileForm, 'notificationThreshold') }}
+          </div>
+          <small class="form-help">Set the threshold for receiving notifications</small>
+        </div>
+      </div>
+
+      <!-- Notification Settings -->
+      <div class="form-section">
+        <h3>Notification Settings</h3>
+        
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              formControlName="notificationsEnabled"
+              class="checkbox">
+            <span class="checkmark"></span>
+            Enable Notifications
+          </label>
+        </div>
+
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              formControlName="emailNotifications"
+              class="checkbox">
+            <span class="checkmark"></span>
+            Email Notifications
+          </label>
+        </div>
+
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              formControlName="smsNotifications"
+              class="checkbox">
+            <span class="checkmark"></span>
+            SMS Notifications
+          </label>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          [disabled]="loading || profileForm.invalid"
+          class="btn btn-primary">
+          <i class="icon-save"></i>
+          Update Profile
+        </button>
+        
+        <button 
+          type="button" 
+          (click)="populateForm()"
+          class="btn btn-secondary">
+          <i class="icon-refresh"></i>
+          Reset Changes
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Password Change Tab -->
+  <div *ngIf="activeTab === 'password'" class="tab-content">
+    <form [formGroup]="passwordForm" (ngSubmit)="onPasswordSubmit()" class="password-form">
+      <div class="form-section">
+        <h3>Change Password</h3>
+        
+        <div class="form-group">
+          <label for="currentPassword">Current Password *</label>
+          <input 
+            type="password" 
+            id="currentPassword"
+            formControlName="currentPassword"
+            class="form-control"
+            [class.error]="getFieldError(passwordForm, 'currentPassword')"
+            placeholder="Enter your current password">
+          <div *ngIf="getFieldError(passwordForm, 'currentPassword')" class="error-message">
+            {{ getFieldError(passwordForm, 'currentPassword') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="newPassword">New Password *</label>
+          <input 
+            type="password" 
+            id="newPassword"
+            formControlName="newPassword"
+            class="form-control"
+            [class.error]="getFieldError(passwordForm, 'newPassword')"
+            placeholder="Enter your new password">
+          <div *ngIf="getFieldError(passwordForm, 'newPassword')" class="error-message">
+            {{ getFieldError(passwordForm, 'newPassword') }}
+          </div>
+          <small class="form-help">Password must be at least 6 characters long</small>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm New Password *</label>
+          <input 
+            type="password" 
+            id="confirmPassword"
+            formControlName="confirmPassword"
+            class="form-control"
+            [class.error]="getFieldError(passwordForm, 'confirmPassword')"
+            placeholder="Confirm your new password">
+          <div *ngIf="getFieldError(passwordForm, 'confirmPassword')" class="error-message">
+            {{ getFieldError(passwordForm, 'confirmPassword') }}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          [disabled]="loading || passwordForm.invalid"
+          class="btn btn-primary">
+          <i class="icon-lock"></i>
+          Change Password
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Danger Zone -->
+  <div class="danger-zone">
+    <h3>Danger Zone</h3>
+    <p>Once you delete your account, there is no going back. Please be certain.</p>
+    <button 
+      type="button" 
+      (click)="onDeleteAccount()"
+      [disabled]="loading"
+      class="btn btn-danger">
+      <i class="icon-trash"></i>
+      Delete Account
+    </button>
+  </div>
+</div>
