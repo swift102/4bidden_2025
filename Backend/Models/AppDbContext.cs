@@ -43,7 +43,8 @@ namespace Backend.Models
                       .HasForeignKey(e => e.UserId);
             });
 
-          
+            base.OnModelCreating(modelBuilder);
+
         }
     }
 }
