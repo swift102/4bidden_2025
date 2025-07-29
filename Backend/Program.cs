@@ -8,27 +8,14 @@ using Backend.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure CORS to allow specific origins and credentials
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowSpecificOrigin", policy =>
-    {
-        policy.WithOrigins("http://localhost:4200") // Angular app
-              .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials(); // Allow cookies, auth headers, etc.
-    });
-});
-
-// Configure Swagger/OpenAPI
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Add services to the container.
+builder.Services.AddOpenApi();
 
 // Add DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Configure Identity (single, combined call)
+// Add Identity services (SINGLE CONFIGURATION)
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = true;
@@ -41,7 +28,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
-// Configure JWT Authentication
+// Add JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -58,11 +45,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// Register services
-builder.Services.AddScoped<IEmailService, EmailService>();
-
-// Add Controllers
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// Configure CORS (SINGLE CONFIGURATION)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin", builder =>
+    {
+        builder.WithOrigins("http://localhost:4200") // Allow requests from your Angular app
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowCredentials(); // Allow credentials like cookies, authorization headers, etc.
+    });
+});
 
 var app = builder.Build();
 
@@ -76,9 +73,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Middleware
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// Add a default route for testing
+app.MapGet("/", () => "API is running!");
 
 app.Run();
