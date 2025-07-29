@@ -58,10 +58,10 @@
           <label for="name">Full Name *</label>
           <input 
             type="text" 
-            id="name"
+            id="Name"
             formControlName="name"
             class="form-control"
-            [class.error]="getFieldError(profileForm, 'name')"
+            [class.error]="getFieldError(profileForm, 'Name')"
             placeholder="Enter your full name">
           <div *ngIf="getFieldError(profileForm, 'name')" class="error-message">
             {{ getFieldError(profileForm, 'name') }}

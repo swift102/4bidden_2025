@@ -14,7 +14,7 @@ export interface UserProfile {
 }
 
 export interface UpdateProfileDto {
-  name: string;
+  Name: string;
   email: string;
   notificationsEnabled: boolean;
   theme: string;

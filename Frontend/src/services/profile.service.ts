@@ -8,39 +8,24 @@ import { UserProfile, UpdateProfileDto, ChangePasswordDto, ApiResponse } from '.
   providedIn: 'root'
 })
 export class ProfileService {
-private apiUrl = 'https://your-api-url.com/api/Profile'; // Replace with your API URL
+private apiUrl = 'https://localhost:7197/api/Profile'; // Replace with your API URL
 
-  constructor(private http: HttpClient) {}
+ constructor(private http: HttpClient) {}
 
-  private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('authToken'); // Adjust based on your auth implementation
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
-  }
-
+  // Remove the getHeaders method and use simple requests
   getProfile(): Observable<ApiResponse<UserProfile>> {
-    return this.http.get<ApiResponse<UserProfile>>(`${this.apiUrl}/GetProfile`, {
-      headers: this.getHeaders()
-    });
+    return this.http.get<ApiResponse<UserProfile>>(`${this.apiUrl}/GetProfile`);
   }
 
   updateProfile(profile: UpdateProfileDto): Observable<ApiResponse<UserProfile>> {
-    return this.http.put<ApiResponse<UserProfile>>(`${this.apiUrl}/UpdateProfile`, profile, {
-      headers: this.getHeaders()
-    });
+    return this.http.put<ApiResponse<UserProfile>>(`${this.apiUrl}/UpdateProfile`, profile);
   }
 
   changePassword(passwordData: ChangePasswordDto): Observable<ApiResponse<any>> {
-    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/change-password`, passwordData, {
-      headers: this.getHeaders()
-    });
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/change-password`, passwordData);
   }
 
   deleteAccount(): Observable<ApiResponse<any>> {
-    return this.http.delete<ApiResponse<any>>(`${this.apiUrl}/DeleteAccount`, {
-      headers: this.getHeaders()
-    });
+    return this.http.delete<ApiResponse<any>>(`${this.apiUrl}/DeleteAccount`);
   }
 }

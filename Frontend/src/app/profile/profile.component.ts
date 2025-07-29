@@ -47,16 +47,17 @@ export class ProfileComponent implements OnInit {
     private fb: FormBuilder,
     private profileService: ProfileService
   ) {
-    this.initializeForms();
+    
   }
 
   ngOnInit(): void {
     this.loadProfile();
+    this.initializeForms();
   }
 
   initializeForms(): void {
     this.profileForm = this.fb.group({
-      name: ['', [Validators.required, Validators.maxLength(100)]],
+      Name: ['', [Validators.required, Validators.maxLength(100)]],
       email: ['', [Validators.required, Validators.email]],
       notificationsEnabled: [true],
       theme: ['light', Validators.required],
