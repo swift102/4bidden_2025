@@ -48,6 +48,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Configure CORS (SINGLE CONFIGURATION)
 builder.Services.AddCors(options =>
@@ -77,7 +78,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// Add a default route for testing
-app.MapGet("/", () => "API is running!");
+
 
 app.Run();

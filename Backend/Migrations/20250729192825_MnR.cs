@@ -31,6 +31,14 @@ namespace Backend.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NotificationsEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    Theme = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NotificationThreshold = table.Column<int>(type: "int", nullable: false),
+                    TimeZone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmailNotifications = table.Column<bool>(type: "bit", nullable: false),
+                    SmsNotifications = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
@@ -81,17 +89,17 @@ namespace Backend.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    UserId1 = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Alerts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Alerts_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
+                        name: "FK_Alerts_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -188,23 +196,23 @@ namespace Backend.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Result = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    UserId1 = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DiagnosticTests", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DiagnosticTests_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
+                        name: "FK_DiagnosticTests_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Alerts_UserId1",
+                name: "IX_Alerts_UserId",
                 table: "Alerts",
-                column: "UserId1");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -252,9 +260,9 @@ namespace Backend.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DiagnosticTests_UserId1",
+                name: "IX_DiagnosticTests_UserId",
                 table: "DiagnosticTests",
-                column: "UserId1");
+                column: "UserId");
         }
 
         /// <inheritdoc />
