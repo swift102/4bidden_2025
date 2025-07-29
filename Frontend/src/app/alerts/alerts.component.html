@@ -1,1 +1,20 @@
-<p>alerts works!</p>
+<!-- src/app/alert/alert.component.html -->
+<div class="container mt-4">
+  <h3>Alerts Dashboard</h3>
+  <table class="table table-bordered table-hover">
+    <thead class="thead-light">
+      <tr>
+        <th>Timestamp (SAST)</th>
+        <th>Title</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let alert of alerts">
+        <td>{{ alert.timestamp | date: 'medium' : '+0200' }}</td>
+        <td>{{ alert.title }}</td>
+       <td [ngClass]="'status-' + alert.status.toLowerCase()">{{ alert.status }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
